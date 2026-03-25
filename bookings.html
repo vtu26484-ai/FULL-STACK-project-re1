@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Bookings - EventSphere</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body{background:#0f0f0f;color:#f5f5f5;padding:40px;font-family:'Poppins',sans-serif;}
+nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;}
+nav h2{color:#FFD700;}
+button{padding:10px 15px;border:none;border-radius:10px;background:linear-gradient(45deg,#C9A227,#FFD700);color:black;font-weight:600;cursor:pointer;}
+button:hover{background:linear-gradient(45deg,#FFD700,#fff8dc);}
+.card{background:#1a1a1a;padding:20px;margin:15px 0;border-radius:15px;border:1px solid rgba(255,215,0,0.2);}
+.card h3{color:#FFD700;margin-bottom:10px;}
+.price{color:#C9A227;font-weight:bold;margin-top:10px;}
+.message{margin-top:20px;font-size:18px;}
+</style>
+</head>
+
+<body>
+
+<nav>
+  <h2>🎟 My Bookings</h2>
+  <a href="index.html"><button>⬅ Back to Events</button></a>
+</nav>
+
+<div id="bookings">
+  <div class="message">Loading your confirmed bookings...</div>
+</div>
+
+<script>
+const container = document.getElementById("bookings");
+
+fetch("/api/mybookings")
+.then(res=>res.json())
+.then(data=>{
+  if(!Array.isArray(data) || data.length===0){
+    container.innerHTML="<div class='message'>No confirmed bookings yet.</div>";
+    return;
+  }
+
+  let html="";
+  data.forEach(b=>{
+    html+=`
+      <div class="card">
+        <h3>${b.title}</h3>
+        <p>${b.location}</p>
+        <p>${new Date(b.event_date).toLocaleString()}</p>
+        <div class="price">₹ ${b.price}</div>
+        <p><strong>Status:</strong> <span style="color:#C9A227;">${b.status}</span></p>
+      </div>
+    `;
+  });
+  container.innerHTML=html;
+})
+.catch(err=>{
+  console.error(err);
+  container.innerHTML="<div class='message'>Unable to fetch bookings. Make sure backend is running.</div>";
+});
+</script>
+
+</body>
+</html>
